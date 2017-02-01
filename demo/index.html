@@ -11,6 +11,8 @@
     <link rel="import" href="../../iron-demo-helpers/demo-pages-shared-styles.html">
     <link rel="import" href="../../iron-demo-helpers/demo-snippet.html">
     <link rel="import" href="../caas-prospects.html">
+    <link rel="import" href="../../caas-auth/caas-auth.html">
+    <link rel="import" href="../../app-route/app-location.html">
 
     <style is="custom-style" include="demo-pages-shared-styles">
     </style>
@@ -19,8 +21,70 @@
     <div class="vertical-section-container centered">
       <h3>Basic caas-prospects demo</h3>
       <demo-snippet>
-        <template>
-          <caas-prospects></caas-prospects>
+        <template
+          is="dom-bind"
+          id="demo"
+          signed-in="[[signedIn]]">
+
+          <caas-prospects
+            id="prospects"
+            auto-download
+            api-endpoint="https://192.168.178.36/api"
+            access-token="[[accessToken]]"
+            prospects="{{prospects}}">
+          </caas-prospects>
+
+          <caas-auth
+            id="auth"
+            api-endpoint="https://192.168.178.36/api"
+            signed-in="{{signedIn}}"
+            access-token="{{accessToken}}"
+            user-role="{{userRole}}"
+            user-id="{{userId}}"
+          ></caas-auth>
+
+          <app-location
+            query-params="{{queryParams}}"
+          ></app-location>
+
+          <template is="dom-if" if="[[!signedIn]]">
+            <h2>Sign in</h2>
+            <form on-submit="signIn">
+              <label for="username">username</label><br>
+              <input type="text" id="username" value="[[queryParams.username]]"><p>
+              <label for="password">password</label><br>
+              <input type="password" id="password" value="[[queryParams.password]]"><p>
+              <input type="submit" value="Sign In">
+            </form>
+          </template>
+
+          <template is="dom-if" if="[[signedIn]]">
+
+            <h2>Signed In as [[userRole]] #[[userId]]</h2>
+            <form on-submit="signOut">
+              <input type="submit" value="Sign Out">
+            </form>
+
+          </template>
+
+          <script>
+            var demo = document.querySelector('#demo');
+            // var incentives = document.querySelector('#incentives');
+
+            demo.signIn = function(evt) {
+              evt.preventDefault();
+              auth.signIn(
+                document.querySelector('#username').value,
+                document.querySelector('#password').value,
+                'accountmanager'
+              );
+            }
+
+            demo.signOut = function(evt) {
+              evt.preventDefault();
+              auth.signOut();
+            }
+          </script>
         </template>
       </demo-snippet>
     </div>
