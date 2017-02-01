@@ -1,0 +1,34 @@
+<link rel="import" href="../polymer/polymer.html">
+
+<!--
+`caas-prospects`
+Polymer Prospects Element for Crowdfunding as a Service Solutions
+
+@demo demo/index.html 
+-->
+
+<dom-module id="caas-prospects">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+    </style>
+    <h2>Hello [[prop1]]</h2>
+  </template>
+
+  <script>
+    Polymer({
+
+      is: 'caas-prospects',
+
+      properties: {
+        prop1: {
+          type: String,
+          value: 'caas-prospects',
+        },
+      },
+
+    });
+  </script>
+</dom-module>
