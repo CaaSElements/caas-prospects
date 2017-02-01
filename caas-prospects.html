@@ -4,16 +4,23 @@
 `caas-prospects`
 Polymer Prospects Element for Crowdfunding as a Service Solutions
 
-@demo demo/index.html 
+@demo demo/index.html
 -->
 
 <dom-module id="caas-prospects">
   <template>
-    <style>
-      :host {
-        display: block;
-      }
-    </style>
+
+      <iron-ajax
+        id="getItems"
+        headers="[[_requestHeaders]]"
+        url="[[apiEndpoint]]/accountmanager/prospects"
+        method="GET"
+        last-response="{{_apiData}}"
+        debounce-duration="3000"
+        auto="[[autoDownload]]"
+        loading="{{loadingProspects}}"
+      ></iron-ajax>
+
     <h2>Hello [[prop1]]</h2>
   </template>
 
@@ -23,11 +30,87 @@ Polymer Prospects Element for Crowdfunding as a Service Solutions
       is: 'caas-prospects',
 
       properties: {
-        prop1: {
+
+        /**
+        * The server side API endpoint
+        */
+        apiEndpoint: {
           type: String,
-          value: 'caas-prospects',
+          value: null
         },
+
+        /**
+        * Exposes the access token (JSON web token) associated with the current session
+        */
+        accessToken: {
+          type: String,
+          value: null,
+          notify: true
+        },
+
+        /**
+        * True while getting all incentives
+        */
+        loadingProspects: {
+          type: Boolean,
+          value: false,
+          notify: true
+        },
+
+        /**
+        * Determines whether the incentives should be downloaded automatically
+        */
+        autoDownload: {
+          type: Boolean,
+          value: false
+        },
+
+        /**
+        * The campaign Id associated with the campaign
+        */
+        campaignId: {
+          type: String,
+          value: null
+        },
+
+        /**
+        * List of all available incentives for this `campaignId`
+        */
+        prospects: {
+          type: Array,
+          computed: '_computeProspects(_apiData.*)',
+          notify: true
+        },
+
+        _requestHeaders: {
+          type: Object,
+          computed: '_computeRequestHeaders(accessToken)'
+        },
+
+        _apiData: {
+          type: Array
+        }
+
       },
+
+      _computeProspects: function(apiDataChange) {
+        var apiData = apiDataChange.base;
+        if(!apiData) return;
+        return apiData.map(this._parseApiDataItemToProspect)
+      },
+
+      _computeRequestHeaders: function(accessToken) {
+        return {
+          'authorization': 'Bearer ' + accessToken
+        }
+      },
+
+      _parseApiDataItemToProspect: function(apiDataItem) {
+        return {
+          id: apiDataItem.id,
+          emailAddress: apiDataItem.emailAddress
+        }
+      }
 
     });
   </script>
