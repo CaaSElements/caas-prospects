@@ -1,4 +1,5 @@
 <link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../iron-ajax/iron-ajax.html">
 
 <!--
 `caas-prospects`
@@ -95,6 +96,7 @@ Polymer Prospects Element for Crowdfunding as a Service Solutions
 
       _computeProspects: function(apiDataChange) {
         var apiData = apiDataChange.base;
+        console.log(apiData);
         if(!apiData) return;
         return apiData.map(this._parseApiDataItemToProspect)
       },
@@ -108,7 +110,8 @@ Polymer Prospects Element for Crowdfunding as a Service Solutions
       _parseApiDataItemToProspect: function(apiDataItem) {
         return {
           id: apiDataItem.id,
-          emailAddress: apiDataItem.emailAddress
+          emailAddress: apiDataItem.emailAddress,
+
         }
       }
 

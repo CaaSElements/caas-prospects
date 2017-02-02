@@ -13,12 +13,22 @@
     <link rel="import" href="../caas-prospects.html">
     <link rel="import" href="../../caas-auth/caas-auth.html">
     <link rel="import" href="../../app-route/app-location.html">
+    <link rel="import" href="../../iron-list/iron-list.html">
 
     <style is="custom-style" include="demo-pages-shared-styles">
+        .prospect-list {
+          display: block;
+          height: 50vh;
+          display: flex;
+          flex-direction: column;
+        }
+        .prospect-list iron-list {
+            flex: 1 1 auto;
+        }
     </style>
   </head>
   <body>
-    <div class="vertical-section-container centered">
+    <div class="vertical-section-container">
       <h3>Basic caas-prospects demo</h3>
       <demo-snippet>
         <template
@@ -28,10 +38,11 @@
 
           <caas-prospects
             id="prospects"
-            auto-download
+            auto-download="[[signedIn]]"
             api-endpoint="https://192.168.178.36/api"
             access-token="[[accessToken]]"
-            prospects="{{prospects}}">
+            prospects="{{prospects}}"
+            loading-prospects="{{loadingProspects}}">
           </caas-prospects>
 
           <caas-auth
@@ -65,11 +76,29 @@
               <input type="submit" value="Sign Out">
             </form>
 
+            <h2>Prospects</h2>
+            <div class="prospect-list">
+                <span hidden$="[[!loadingProspects]]">loading prospects</span>
+                <iron-list
+                    items="{{prospects}}"
+                    as="prospect">
+
+                    <template>
+                        <div class="item">
+                            Prospect: [[prospect.id]]
+                        </div>
+                    </template>
+
+                </iron-list>
+
+            </div>
+
+
           </template>
 
           <script>
             var demo = document.querySelector('#demo');
-            // var incentives = document.querySelector('#incentives');
+            var prospects = document.querySelector('#prospects');
 
             demo.signIn = function(evt) {
               evt.preventDefault();
