@@ -36,15 +36,6 @@
           id="demo"
           signed-in="[[signedIn]]">
 
-          <caas-prospects
-            id="prospects"
-            auto-download="[[signedIn]]"
-            api-endpoint="https://192.168.178.36/api"
-            access-token="[[accessToken]]"
-            prospects="{{prospects}}"
-            loading-prospects="{{loadingProspects}}">
-          </caas-prospects>
-
           <caas-auth
             id="auth"
             api-endpoint="https://192.168.178.36/api"
@@ -53,6 +44,21 @@
             user-role="{{userRole}}"
             user-id="{{userId}}"
           ></caas-auth>
+
+          <caas-prospects
+            id="prospects"
+            auto-download="[[signedIn]]"
+            api-endpoint="https://192.168.178.36/api"
+            access-token="[[accessToken]]"
+            limit="[[limit]]"
+            direction="[[direction]]"
+            search-query="[[searchQuery]]"
+            order-by="[[orderBy]]"
+            account-manager="[[accountManager]]"
+            prospects="{{prospects}}"
+            loading-prospects="{{loadingProspects}}"
+            log>
+          </caas-prospects>
 
           <app-location
             query-params="{{queryParams}}"
@@ -78,14 +84,48 @@
 
             <h2>Prospects</h2>
             <div class="prospect-list">
-                <span hidden$="[[!loadingProspects]]">loading prospects</span>
+
+                <article class="">
+
+                    <label for="searchQuery">searchQuery</label>
+                    <input type="text" id="searchQuery" value="{{searchQuery::change}}"><br><br>
+
+                    <label for="limit">limit</label>
+                    <input type="text" id="limit" value="{{limit::change}}"><br><br>
+
+                    <label for="orderBy">orderBy</label>
+                    <select name="orderBy" value="{{orderBy::change}}">
+                      <option value="datum" selected>Aanmelding</option>
+                      <option value="aanmeldnaam">Naam</option>
+                      <option value="projectnaam">ProjectNaam</option>
+                      <option value="score">score</option>
+                      <option value="">geen</option>
+                    </select>
+
+                    <label for="accountManager">accountManager</label>
+                    <select name="accountManager" value="{{accountManager::change}}">
+                      <option value="kim" selected>kim</option>
+                      <option value="loes">loes</option>
+                      <option value="mark">mark</option>
+                      <option value="">geen</option>
+                    </select>
+
+                    <label for="direction">Sort direction</label>
+                    <select name="direction" value="{{direction::change}}">
+                      <option value="DESC" selected>Descending</option>
+                      <option value="ASC">Ascending</option>
+                    </select>
+
+                </article>
+
+
                 <iron-list
                     items="{{prospects}}"
                     as="prospect">
 
                     <template>
                         <div class="item">
-                            Prospect: [[prospect.id]]
+                            Prospect: [[prospect.id]] - [[prospect.emailAddress]]
                         </div>
                     </template>
 
