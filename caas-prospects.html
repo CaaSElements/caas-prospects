@@ -20,6 +20,7 @@ Polymer Prospects Element for Crowdfunding as a Service Solutions
         debounce-duration="3000"
         auto="[[autoDownload]]"
         loading="{{loadingProspects}}"
+        params="[[_queryParams]]"
       ></iron-ajax>
 
     <h2>Hello [[prop1]]</h2>
@@ -69,9 +70,29 @@ Polymer Prospects Element for Crowdfunding as a Service Solutions
         /**
         * The campaign Id associated with the campaign
         */
-        campaignId: {
+        limit: {
+          type: Number,
+          value: null
+        },
+
+        direction: {
           type: String,
           value: null
+        },
+
+        searchQuery: {
+          type: String,
+          value: null
+        },
+
+        accountManager: {
+          type: String,
+          value: null
+        },
+
+        orderBy: {
+            type: String,
+            value: null
         },
 
         /**
@@ -88,6 +109,11 @@ Polymer Prospects Element for Crowdfunding as a Service Solutions
           computed: '_computeRequestHeaders(accessToken)'
         },
 
+        _queryParams: {
+            type: Object,
+            computed: '_computeQueryParams(limit, direction, searchQuery, accountManager, orderBy)'
+        },
+
         _apiData: {
           type: Array
         }
@@ -99,6 +125,16 @@ Polymer Prospects Element for Crowdfunding as a Service Solutions
         console.log(apiData);
         if(!apiData) return;
         return apiData.map(this._parseApiDataItemToProspect)
+      },
+
+      _computeQueryParams: function(limit, direction, searchQuery, accountManager, orderBy) {
+          var queryParams = {}
+          if (limit) queryParams.limit = limit;
+          if (direction && (direction == "ASC" || direction == "DESC")) queryParams.direction = direction;
+          if (searchQuery) queryParams.searchQuery = searchQuery;
+          if (accountManager) queryParams.accountManager = accountManager;
+          if (orderBy) queryParams.orderBy = orderBy;
+          return queryParams;
       },
 
       _computeRequestHeaders: function(accessToken) {
