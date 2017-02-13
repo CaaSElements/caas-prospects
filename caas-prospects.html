@@ -17,13 +17,12 @@ Polymer Prospects Element for Crowdfunding as a Service Solutions
         url="[[apiEndpoint]]/accountmanager/prospects"
         method="GET"
         last-response="{{_apiData}}"
-        debounce-duration="3000"
+        debounce-duration="500"
         auto="[[autoDownload]]"
         loading="{{loadingProspects}}"
         params="[[_queryParams]]"
       ></iron-ajax>
 
-    <h2>Hello [[prop1]]</h2>
   </template>
 
   <script>
@@ -147,7 +146,36 @@ Polymer Prospects Element for Crowdfunding as a Service Solutions
         return {
           id: apiDataItem.id,
           emailAddress: apiDataItem.emailAddress,
-
+          createdOn: apiDataItem.createdOn,
+          score: apiDataItem.score,
+          fullName: apiDataItem.fullName,
+          phoneNumber: apiDataItem.phoneNumber,
+          organisationName: apiDataItem.organisationName,
+          websiteURL: apiDataItem.websiteURL,
+          region: apiDataItem.region,
+          reference: apiDataItem.reference,
+          comments: apiDataItem.comments,
+          status: apiDataItem.status,
+          action: apiDataItem.action,
+          accountmanager: apiDataItem.accountmanager,
+          progress: apiDataItem.progress,
+          followUp: apiDataItem.followUp,
+          desiredCapital: apiDataItem.desiredCapital,
+          fundingType: apiDataItem.fundingType,
+          KvKRegistrationTime: apiDataItem.KvKRegistrationTime,
+          inspiredBy: apiDataItem.inspiredBy,
+          prominentCustomers: apiDataItem.prominentCustomers,
+          networkCommitmentScore: apiDataItem.networkCommitmentScore,
+          toBeCalled: apiDataItem.toBeCalled,
+          mailed: apiDataItem.mailed,
+          called: apiDataItem.called,
+          talked: apiDataItem.talked,
+          placeAble: apiDataItem.placeAble,
+          toBeMailed: apiDataItem.toBeMailed,
+          scorePercentage: apiDataItem.scorePercentage,
+          flagged: apiDataItem.flagged,
+          savedScorePercentage: apiDataItem.savedScorePercentage,
+          testResults: apiDataItem.testResults
         }
       }
 
