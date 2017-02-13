@@ -105,6 +105,11 @@ Polymer Prospects Element for Crowdfunding as a Service Solutions
             value: null
         },
 
+        offset: {
+          type: Number,
+          value: null
+        },
+
         /**
         * List of all available incentives for this `campaignId`
         */
@@ -121,7 +126,7 @@ Polymer Prospects Element for Crowdfunding as a Service Solutions
 
         _queryParams: {
             type: Object,
-            computed: '_computeQueryParams(limit, direction, searchQuery, accountManager, orderBy)'
+            computed: '_computeQueryParams(limit, direction, searchQuery, accountManager, orderBy, offset)'
         },
 
         _apiData: {
@@ -190,13 +195,14 @@ Polymer Prospects Element for Crowdfunding as a Service Solutions
         return apiData.map(this._parseApiDataItemToProspect)
       },
 
-      _computeQueryParams: function(limit, direction, searchQuery, accountManager, orderBy) {
+      _computeQueryParams: function(limit, direction, searchQuery, accountManager, orderBy, offset) {
           var queryParams = {}
           if (limit) queryParams.limit = limit;
           if (direction && (direction == "ASC" || direction == "DESC")) queryParams.direction = direction;
           if (searchQuery) queryParams.searchQuery = searchQuery;
           if (accountManager) queryParams.accountManager = accountManager;
           if (orderBy) queryParams.orderBy = orderBy;
+          if (offset) queryParams.offset = offset;
           return queryParams;
       },
 
