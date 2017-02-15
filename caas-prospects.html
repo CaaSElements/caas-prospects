@@ -195,7 +195,7 @@ Polymer Prospects Element for Crowdfunding as a Service Solutions
         this.$.updateItem.generateRequest();
       },
 
-      _handleUpdateItemResponse: function(evt, request) {
+      _handleUpdateItemResponse: function(evt) {
         var savedItem = evt.detail.response;
         var toBeUpdatedArrayIndex = this._getArrayIndexByProspectId(savedItem.id);
         this._updateProspectByArrayIndex(savedItem, toBeUpdatedArrayIndex);
