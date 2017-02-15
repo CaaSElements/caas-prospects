@@ -161,6 +161,29 @@ Polymer Prospects Element for Crowdfunding as a Service Solutions
         this.$.getItems.generateRequest();
       },
 
+      _computeRequestHeaders: function(accessToken) {
+        return {
+          'authorization': 'Bearer ' + accessToken
+        }
+      },
+
+      _computeQueryParams: function(limit, direction, searchQuery, accountManager, orderBy, offset) {
+        var queryParams = {}
+        if (limit) queryParams.limit = limit;
+        if (direction && (direction == "ASC" || direction == "DESC")) queryParams.direction = direction;
+        if (searchQuery) queryParams.searchQuery = searchQuery;
+        if (accountManager) queryParams.accountManager = accountManager;
+        if (orderBy) queryParams.orderBy = orderBy;
+        if (offset) queryParams.offset = offset;
+        return queryParams;
+      },
+
+      _computeProspects: function(apiDataChange) {
+        var apiData = apiDataChange.base;
+        if(!apiData) return;
+        return apiData.map(this._parseApiDataItemToProspect)
+      },
+
       _prospectsDataChanged: function(changeRecord) {
         var arrayItemIndex = changeRecord.path.split('.');
         if (!arrayItemIndex[2]) return;
@@ -170,29 +193,6 @@ Polymer Prospects Element for Crowdfunding as a Service Solutions
         this.$.updateItem.url = this.apiEndpoint + '/accountmanager/prospects/' + item.id;
         this.$.updateItem.body = JSON.stringify(item);
         this.$.updateItem.generateRequest();
-      },
-
-      _computeProspects: function(apiDataChange) {
-        var apiData = apiDataChange.base;
-        if(!apiData) return;
-        return apiData.map(this._parseApiDataItemToProspect)
-      },
-
-      _computeQueryParams: function(limit, direction, searchQuery, accountManager, orderBy, offset) {
-          var queryParams = {}
-          if (limit) queryParams.limit = limit;
-          if (direction && (direction == "ASC" || direction == "DESC")) queryParams.direction = direction;
-          if (searchQuery) queryParams.searchQuery = searchQuery;
-          if (accountManager) queryParams.accountManager = accountManager;
-          if (orderBy) queryParams.orderBy = orderBy;
-          if (offset) queryParams.offset = offset;
-          return queryParams;
-      },
-
-      _computeRequestHeaders: function(accessToken) {
-        return {
-          'authorization': 'Bearer ' + accessToken
-        }
       },
 
       _handleUpdateItemResponse: function(evt, request) {
@@ -229,7 +229,6 @@ Polymer Prospects Element for Crowdfunding as a Service Solutions
 
       _parseApiDataItemToProspect: function(apiDataItem) {
         return {
-          timestamp: apiDataItem.timestamp,
           id: apiDataItem.id,
           emailAddress: apiDataItem.emailAddress,
           createdOn: apiDataItem.createdOn,
