@@ -168,10 +168,8 @@ Polymer Prospects Element for Crowdfunding as a Service Solutions
 
         this.fire('prospect-updating', item.id);
         this.$.updateItem.url = this.apiEndpoint + '/accountmanager/prospects/' + item.id;
-        this.$.updateItem.currentIndex = arrayItemIndex;
         this.$.updateItem.body = JSON.stringify(item);
-        request = this.$.updateItem.generateRequest();
-        request.itemArrayIndex = arrayItemIndex;
+        this.$.updateItem.generateRequest();
       },
 
       _computeProspects: function(apiDataChange) {
@@ -198,17 +196,27 @@ Polymer Prospects Element for Crowdfunding as a Service Solutions
       },
 
       _handleUpdateItemResponse: function(evt, request) {
-        var arrayItemIndex = request.itemArrayIndex[1];
-        var savedItem = evt.detail.response
-
-        this.set('prospects.' + arrayItemIndex, savedItem);
-        this.notifyPath('prospects.' + arrayItemIndex);
-        this.$.updateItem.currentIndex = null;
+        var savedItem = evt.detail.response;
+        var toBeUpdatedArrayIndex = this._getArrayIndexByProspectId(savedItem.id);
+        this._updateProspectByArrayIndex(savedItem, toBeUpdatedArrayIndex);
         this.$.updateItem.url = null;
         this.fire('prospect-updated', {
           response: savedItem
         });
+      },
 
+      _getArrayIndexByProspectId: function(id) {
+        for (var i = 0; i < this.prospects.length; i++) {
+          if(this.prospects[i].id === id){
+            return this.prospects.indexOf(this.prospects[i]);
+          }
+        }
+      },
+
+      _updateProspectByArrayIndex: function(updatedProspect, arrayIndex) {
+        if (arrayIndex != -1) {
+          return this.splice('prospects', arrayIndex, 1, updatedProspect);
+        }
       },
 
       _handleUpdateItemError: function(evt) {
