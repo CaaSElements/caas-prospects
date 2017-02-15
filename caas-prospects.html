@@ -214,6 +214,7 @@ Polymer Prospects Element for Crowdfunding as a Service Solutions
       },
 
       _updateProspectByArrayIndex: function(updatedProspect, arrayIndex) {
+        var updatedProspect = this._parseApiDataItemToProspect(updatedProspect);
         if (arrayIndex != -1) {
           return this.splice('prospects', arrayIndex, 1, updatedProspect);
         }
@@ -229,6 +230,7 @@ Polymer Prospects Element for Crowdfunding as a Service Solutions
 
       _parseApiDataItemToProspect: function(apiDataItem) {
         return {
+          savedOn: apiDataItem.savedOn,
           id: apiDataItem.id,
           emailAddress: apiDataItem.emailAddress,
           createdOn: apiDataItem.createdOn,
