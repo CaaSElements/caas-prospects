@@ -29,7 +29,6 @@ Polymer Prospects Element for Crowdfunding as a Service Solutions
         method="PUT"
         on-response="_handleUpdateItemResponse"
         on-error="_handleUpdateItemError"
-        last-response="{{_apiDataTODODODODODODODO}}"
         params="[[_queryParams]]"
         debounce-duration="500"
       ></iron-ajax>
@@ -61,7 +60,7 @@ Polymer Prospects Element for Crowdfunding as a Service Solutions
         },
 
         /**
-        * True while getting all incentives
+        * True while getting all prospects
         */
         loadingProspects: {
           type: Boolean,
@@ -70,7 +69,7 @@ Polymer Prospects Element for Crowdfunding as a Service Solutions
         },
 
         /**
-        * Determines whether the incentives should be downloaded automatically
+        * Determines whether the prospeccts should be downloaded automatically
         */
         autoDownload: {
           type: Boolean,
@@ -78,43 +77,59 @@ Polymer Prospects Element for Crowdfunding as a Service Solutions
         },
 
         /**
-        * The campaign Id associated with the campaign
+        * Maximum number of downloaded prospects
         */
         limit: {
           type: Number,
           value: null
         },
 
+        /**
+        * Sort direction 'ASC' or 'DESC'
+        */
         direction: {
           type: String,
           value: null
         },
 
+        /**
+        * Search for projectname or prospect name
+        */
         searchQuery: {
           type: String,
           value: null
         },
 
+        /**
+        * Only show prospects for 1 particular accountmanager
+        */
         accountManager: {
           type: String,
           value: null
         },
 
+        /**
+        * Sort prospects by any of the keys
+        */
         orderBy: {
             type: String,
             value: null
         },
 
+        /**
+        * Offset for pagination
+        */
         offset: {
           type: Number,
           value: null
         },
 
         /**
-        * List of all available incentives for this `campaignId`
+        * List of all available prospects
         */
         prospects: {
           type: Array,
+          value: [],
           computed: '_computeProspects(_apiData.*)',
           notify: true
         },
@@ -135,58 +150,28 @@ Polymer Prospects Element for Crowdfunding as a Service Solutions
 
       },
 
+      observers: [
+        '_prospectsDataChanged(prospects.*)'
+      ],
+
       /*
-      * Download All Incentives
+      * Get All Incentives
       */
       getItems: function() {
         this.$.getItems.generateRequest();
       },
 
-      /**
-      * Update Item
-      * @param {{
-      * id: String,
-      * emailAddress:  String,
-      * id:  String,
-      * emailAddress:  String,
-      * createdOn:  String,
-      * score:  String,
-      * fullName:  String,
-      * phoneNumber:  String,
-      * organisationName:  String,
-      * websiteURL:  String,
-      * region:  String,
-      * reference:  String,
-      * comments:  String,
-      * status:  String,
-      * action:  String,
-      * accountmanager:  String,
-      * progress:  String,
-      * followUp:  String,
-      * desiredCapital:  String,
-      * fundingType:  String,
-      * KvKRegistrationTime:  String,
-      * inspiredBy:  String,
-      * prominentCustomers:  String,
-      * networkCommitmentScore:  String,
-      * toBeCalled:  String,
-      * mailed:  String,
-      * called:  String,
-      * talked:  String,
-      * placeAble:  String,
-      * toBeMailed:  String,
-      * scorePercentage:  String,
-      * flagged:  String,
-      * savedScorePercentage:  String,
-      * testResults:  String,
-      }} item The Item to be updated
-      */
+      _prospectsDataChanged: function(changeRecord) {
+        var arrayItemIndex = changeRecord.path.split('.');
+        if (!arrayItemIndex[2]) return;
+        var item = this.get('prospects.' + arrayItemIndex[1]);
 
-      updateItem: function(item) {
-        this.fire('incentive-loading', item.id);
+        this.fire('prospect-updating', item.id);
         this.$.updateItem.url = this.apiEndpoint + '/accountmanager/prospects/' + item.id;
+        this.$.updateItem.currentIndex = arrayItemIndex;
         this.$.updateItem.body = JSON.stringify(item);
-        this.$.updateItem.generateRequest();
+        request = this.$.updateItem.generateRequest();
+        request.itemArrayIndex = arrayItemIndex;
       },
 
       _computeProspects: function(apiDataChange) {
@@ -212,21 +197,31 @@ Polymer Prospects Element for Crowdfunding as a Service Solutions
         }
       },
 
-      _handleUpdateItemResponse: function() {
+      _handleUpdateItemResponse: function(evt, request) {
+        var arrayItemIndex = request.itemArrayIndex[1];
+        var savedItem = evt.detail.response
+
+        this.set('prospects.' + arrayItemIndex, savedItem);
+        this.notifyPath('prospects.' + arrayItemIndex);
+        this.$.updateItem.currentIndex = null;
         this.$.updateItem.url = null;
-        this.fire('prospect-updated');
+        this.fire('prospect-updated', {
+          response: savedItem
+        });
+
       },
 
       _handleUpdateItemError: function(evt) {
         this.$.updateItem.url = null;
         this.fire('prospect-update-error', {
           message: evt.detail.error.message,
-          response: event.detail.request.xhr.response
+          response: evt.detail.response
         });
       },
 
       _parseApiDataItemToProspect: function(apiDataItem) {
         return {
+          timestamp: apiDataItem.timestamp,
           id: apiDataItem.id,
           emailAddress: apiDataItem.emailAddress,
           createdOn: apiDataItem.createdOn,
@@ -261,7 +256,6 @@ Polymer Prospects Element for Crowdfunding as a Service Solutions
           testResults: apiDataItem.testResults
         }
       }
-
     });
   </script>
 </dom-module>
