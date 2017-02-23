@@ -38,7 +38,7 @@
 
           <caas-auth
             id="auth"
-            api-endpoint="https://192.168.178.36/api"
+            api-endpoint="http://canapi.local"
             signed-in="{{signedIn}}"
             access-token="{{accessToken}}"
             user-role="{{userRole}}"
@@ -48,12 +48,13 @@
           <caas-prospects
             id="prospects"
             auto-download="[[signedIn]]"
-            api-endpoint="https://192.168.178.36/api"
+            api-endpoint="http://canapi.local"
             access-token="[[accessToken]]"
-            limit="[[limit]]"
-            direction="[[direction]]"
+            limit="{{limit}}"
+            offset="{{offset}}"
+            direction="{{direction}}"
             search-query="[[searchQuery]]"
-            order-by="[[orderBy]]"
+            order-by="{{orderBy}}"
             account-manager="[[accountManager]]"
             prospects="{{prospects}}"
             loading-prospects="{{loadingProspects}}"
@@ -91,10 +92,14 @@
                     <input type="text" id="searchQuery" value="{{searchQuery::change}}"><br><br>
 
                     <label for="limit">limit</label>
-                    <input type="text" id="limit" value="{{limit::change}}"><br><br>
+                    <input type="text" id="limit" value="{{limit::input}}"><br><br>
+
+                    <label for="offset">offset</label>
+                    <input type="text" id="offset" value="{{offset::input}}"><br><br>
 
                     <label for="orderBy">orderBy</label>
                     <select name="orderBy" value="{{orderBy::change}}">
+                      <option value="id">id</option>
                       <option value="datum" selected>Aanmelding</option>
                       <option value="aanmeldnaam">Naam</option>
                       <option value="projectnaam">ProjectNaam</option>
