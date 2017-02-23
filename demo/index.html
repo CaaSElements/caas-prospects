@@ -52,12 +52,14 @@
             access-token="[[accessToken]]"
             limit="{{limit}}"
             offset="{{offset}}"
-            direction="{{direction}}"
-            search-query="[[searchQuery]]"
+            order="{{direction}}"
             order-by="{{orderBy}}"
             account-manager="[[accountManager]]"
-            prospects="{{prospects}}"
-            loading-prospects="{{loadingProspects}}"
+            items="{{prospects}}"
+            loading-items="{{loadingProspects}}"
+            search-name="[[searchName]]"
+            search-project-name="[[searchProjectName]]"
+            filter-account-manager-name="[[accountManager]]"
             log>
           </caas-prospects>
 
@@ -88,8 +90,11 @@
 
                 <article class="">
 
-                    <label for="searchQuery">searchQuery</label>
-                    <input type="text" id="searchQuery" value="{{searchQuery::change}}"><br><br>
+                    <label for="searchName">search name</label>
+                    <input type="text" id="searchName" value="{{searchName::input}}"><br><br>
+
+                    <label for="searchProjectName">search project name</label>
+                    <input type="text" id="searchProjectName" value="{{searchProjectName::input}}"><br><br>
 
                     <label for="limit">limit</label>
                     <input type="text" id="limit" value="{{limit::input}}"><br><br>
@@ -109,10 +114,10 @@
 
                     <label for="accountManager">accountManager</label>
                     <select name="accountManager" value="{{accountManager::change}}">
-                      <option value="kim" selected>kim</option>
+                      <option value="" selected>geen</option>
+                      <option value="kim">kim</option>
                       <option value="loes">loes</option>
                       <option value="mark">mark</option>
-                      <option value="">geen</option>
                     </select>
 
                     <label for="direction">Sort direction</label>

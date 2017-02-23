@@ -5,7 +5,8 @@
   "dependencies": {
     "polymer": "Polymer/polymer#^1.4.0",
     "iron-ajax": "^1.4.3",
-    "app-storage": "PolymerElements/app-storage#^0.9.8"
+    "app-storage": "PolymerElements/app-storage#^0.9.8",
+    "caas-crud-behavior": "CaaSElements/caas-crud-behavior"
   },
   "devDependencies": {
     "iron-component-page": "PolymerElements/iron-component-page#^1.0.0",

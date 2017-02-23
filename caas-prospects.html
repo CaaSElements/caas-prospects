@@ -1,5 +1,6 @@
 <link rel="import" href="../polymer/polymer.html">
 <link rel="import" href="../iron-ajax/iron-ajax.html">
+<link rel="import" href="../caas-crud-behavior/caas-crud-behavior.html">
 
 <!--
 `caas-prospects`
@@ -19,7 +20,7 @@ Polymer Prospects Element for Crowdfunding as a Service Solutions
         last-response="{{_apiData}}"
         debounce-duration="500"
         auto="[[autoDownload]]"
-        loading="{{loadingProspects}}"
+        loading="{{loadingItems}}"
         params="[[_queryParams]]"
       ></iron-ajax>
 
@@ -39,200 +40,64 @@ Polymer Prospects Element for Crowdfunding as a Service Solutions
     Polymer({
 
       is: 'caas-prospects',
+      behaviors: [CaasCrudBehavior],
 
       properties: {
 
         /**
-        * The server side API endpoint
+        * Name search string
         */
-        apiEndpoint: {
+        searchName: {
           type: String,
           value: null
         },
 
         /**
-        * Exposes the access token (JSON web token) associated with the current session
+        * Project name search string
         */
-        accessToken: {
+        searchProjectName: {
           type: String,
-          value: null,
-          notify: true
+          value: null
         },
 
         /**
-        * True while getting all prospects
+        * Account manager email search string
         */
-        loadingProspects: {
-          type: Boolean,
-          value: false,
-          notify: true
-        },
-
-        /**
-        * Determines whether the prospeccts should be downloaded automatically
-        */
-        autoDownload: {
-          type: Boolean,
-          value: false
-        },
-
-        /**
-        * Maximum number of downloaded prospects
-        */
-        limit: {
-          type: Number,
-          value: 100,
-          notify: true
-        },
-
-        /**
-        * Sort direction 'ASC' or 'DESC'
-        */
-        direction: {
+        filterAccountManagerName: {
           type: String,
-          value: 'DESC',
-          notify: true
+          value: null
         },
 
         /**
-        * Search for projectname or prospect name
+        * Search
         */
         searchQuery: {
-          type: String,
-          value: null
-        },
-
-        /**
-        * Only show prospects for 1 particular accountmanager
-        */
-        accountManager: {
-          type: String,
-          value: null
-        },
-
-        /**
-        * Sort prospects by any of the keys
-        */
-        orderBy: {
-            type: String,
-            value: 'id',
-            notify: true
-        },
-
-        /**
-        * Offset for pagination
-        */
-        offset: {
-          type: Number,
-          value: 0,
-          notify: true
-        },
-
-        /**
-        * List of all available prospects
-        */
-        prospects: {
-          type: Array,
-          value: [],
-          computed: '_computeProspects(_apiData.*)',
-          notify: true
-        },
-
-        _requestHeaders: {
           type: Object,
-          computed: '_computeRequestHeaders(accessToken)'
+          computed: '_computeSearchQuery(searchName, searchProjectName, filterAccountManagerName)'
         },
 
-        _queryParams: {
-            type: Object,
-            computed: '_computeQueryParams(limit, direction, searchQuery, accountManager, orderBy, offset)'
-        },
-
-        _apiData: {
-          type: Array
-        }
-
       },
 
-      observers: [
-        '_prospectsDataChanged(prospects.*)'
-      ],
+      _computeSearchQuery: function(searchName, searchProjectName, filterAccountManagerName) { 
 
-      /*
-      * Get All Incentives
-      */
-      getItems: function() {
-        this.$.getItems.generateRequest();
-      },
-
-      _computeRequestHeaders: function(accessToken) {
-        return {
-          'authorization': 'Bearer ' + accessToken
-        }
-      },
-
-      _computeQueryParams: function(limit, direction, searchQuery, accountManager, orderBy, offset) {
-        var queryParams = {}
-        if (limit) queryParams.limit = limit;
-        if (direction && (direction == "ASC" || direction == "DESC")) queryParams.direction = direction;
-        if (searchQuery) queryParams.searchQuery = searchQuery;
-        if (accountManager) queryParams.accountManager = accountManager;
-        if (orderBy) queryParams.orderBy = orderBy;
-        if (offset) queryParams.offset = offset;
-        return queryParams;
-      },
-
-      _computeProspects: function(apiDataChange) {
-        var apiData = apiDataChange.base;
-        if(!apiData) return;
-        return apiData.map(this._parseApiDataItemToProspect)
-      },
-
-      _prospectsDataChanged: function(changeRecord) {
-        var arrayItemIndex = changeRecord.path.split('.');
-        if (!arrayItemIndex[2]) return;
-        var item = this.get('prospects.' + arrayItemIndex[1]);
-
-        this.fire('prospect-updating', item.id);
-        this.$.updateItem.url = this.apiEndpoint + '/accountmanager/prospects/' + item.id;
-        this.$.updateItem.body = JSON.stringify(item);
-        this.$.updateItem.generateRequest();
-      },
-
-      _handleUpdateItemResponse: function(evt) {
-        var savedItem = evt.detail.response;
-        var toBeUpdatedArrayIndex = this._getArrayIndexByProspectId(savedItem.id);
-        this._updateProspectByArrayIndex(savedItem, toBeUpdatedArrayIndex);
-        this.$.updateItem.url = null;
-        this.fire('prospect-updated', {
-          response: savedItem
-        });
-      },
-
-      _getArrayIndexByProspectId: function(id) {
-        for (var i = 0; i < this.prospects.length; i++) {
-          if(this.prospects[i].id === id){
-            return this.prospects.indexOf(this.prospects[i]);
+        return [
+          {
+            "OR": {
+              "aanmeldnaam": encodeURIComponent(searchName) || "",
+              "projectnaam": encodeURIComponent(searchProjectName) || "",
+            }
+          },
+          {
+            "AND": {
+              "accountmanager": filterAccountManagerName || ""
+            }
           }
-        }
+        ]
+
       },
 
-      _updateProspectByArrayIndex: function(updatedProspect, arrayIndex) {
-        var updatedProspect = this._parseApiDataItemToProspect(updatedProspect);
-        if (arrayIndex != -1) {
-          return this.splice('prospects', arrayIndex, 1, updatedProspect);
-        }
-      },
-
-      _handleUpdateItemError: function(evt) {
-        this.$.updateItem.url = null;
-        this.fire('prospect-update-error', {
-          message: evt.detail.error.message,
-          response: evt.detail.response
-        });
-      },
-
-      _parseApiDataItemToProspect: function(apiDataItem) {
+      _parseApiDataItemToItem: function(apiDataItem) {
+        
         return {
           savedOn: apiDataItem.savedOn,
           id: apiDataItem.id,
@@ -268,7 +133,9 @@ Polymer Prospects Element for Crowdfunding as a Service Solutions
           savedScorePercentage: apiDataItem.savedScorePercentage,
           testResults: apiDataItem.testResults
         }
+
       }
+
     });
   </script>
 </dom-module>
