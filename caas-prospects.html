@@ -138,9 +138,14 @@ Polymer Prospects Element for Crowdfunding as a Service Solutions
           notify: true
         },
 
+        activeRole: {
+          type: String,
+          notify: true
+        },
+
         _requestHeaders: {
           type: Object,
-          computed: '_computeRequestHeaders(accessToken)'
+          computed: '_computeRequestHeaders(accessToken, activeRole)'
         },
 
         _queryParams: {
@@ -165,9 +170,10 @@ Polymer Prospects Element for Crowdfunding as a Service Solutions
         this.$.getItems.generateRequest();
       },
 
-      _computeRequestHeaders: function(accessToken) {
+      _computeRequestHeaders: function(accessToken, activeRole) {
         return {
-          'authorization': 'Bearer ' + accessToken
+          'authorization': 'Bearer ' + accessToken,
+          'activeRole': activeRole
         }
       },
 
